@@ -4,6 +4,7 @@ import brg.ghassen.todo.dto.TodoDto;
 import brg.ghassen.todo.entity.Todo;
 import brg.ghassen.todo.repository.TodoRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,25 +12,19 @@ import org.springframework.stereotype.Service;
 public class TodoServiceImpl implements TodoService {
 
     private TodoRepository todoRepository;
+    private ModelMapper modelMapper;
 
     @Override
     public TodoDto addTodo(TodoDto todoDto) {
 
-        // Convert TodoDto into Todo jpa entity
-        Todo todo = new Todo();
-        todo.setTitle(todoDto.getTitle());
-        todo.setDescription(todoDto.getDescription());
-        todo.setCompleted(todoDto.isCompleted());
+        // Convert TodoDto into Todo_ jpa entity
+        Todo todo = modelMapper.map(todoDto, Todo.class);
 
-        // Save Todo jpa entity
+        // Save Todo_ jpa entity
         Todo savedTodo = todoRepository.save(todo);
 
-        // Convert Todo jpa entity into TodoDto
-        TodoDto savedTodoDto = new TodoDto();
-        savedTodoDto.setId(savedTodo.getId());
-        savedTodoDto.setTitle(savedTodo.getTitle());
-        savedTodoDto.setDescription(savedTodo.getDescription());
-        savedTodoDto.setCompleted(savedTodo.isCompleted());
+        // Convert Todo_ jpa entity into TodoDto
+        TodoDto savedTodoDto = modelMapper.map(savedTodo, TodoDto.class);
 
         return savedTodoDto;
     }
