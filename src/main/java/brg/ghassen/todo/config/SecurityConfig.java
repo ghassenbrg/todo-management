@@ -2,6 +2,7 @@ package brg.ghassen.todo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -26,7 +27,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> {
-                    authorize.anyRequest().authenticated();
+                    authorize.requestMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.GET, "/api/**").hasAnyRole("ADMIN", "USER")
+                            .requestMatchers(HttpMethod.PATCH, "/api/**").hasAnyRole("ADMIN", "USER")
+                            .anyRequest().authenticated();
                 })
                 .httpBasic(Customizer.withDefaults());
         return http.build();
